@@ -7,7 +7,18 @@ import particle_filter_auv
 particle_filter_auv.main(['--show-all'])
 
 or
+
+import particle_filter_auv
+particle_filter_auv.main(['--animate'])
+
+
+particle_filter_auv.main(['--show-likelihood', '--step', '20'])
+
+particle_filter_auv.main(['--animate', '--show-likelihood', '--show-neff'])
+
+or
 particle_filter_auv.main(['--export-figures', './figures', '--seed', '7'])
+
 
 Particle Filter Tutorial — Tracking a Drifting AUV with a Noisy Acoustic Sensor
 =================================================================================
@@ -369,7 +380,25 @@ def run_animation(pf_kwargs):
 
     ani = animation.FuncAnimation(fig, update, frames=range(0, pf.T + 1),
                                    interval=150, blit=False, repeat=False)
-    plt.show()
+
+    # plt.show() only animates in a native desktop backend. Colab/Jupyter's
+    # inline backend just renders a single static frame instead of playing
+    # the movie, so in a notebook we instead render the animation as
+    # embedded JS/HTML5, which Colab can actually play.
+    in_notebook = False
+    try:
+        from IPython import get_ipython
+        in_notebook = get_ipython() is not None
+    except ImportError:
+        pass
+
+    if in_notebook:
+        from IPython.display import HTML, display
+        plt.close(fig)  # prevent the static duplicate frame from also rendering
+        display(HTML(ani.to_jshtml()))
+    else:
+        plt.show()
+
     return ani
 
 
