@@ -1,9 +1,8 @@
 # Particle Filter Tutorial: Tracking a Drifting AUV with a Noisy Acoustic Sensor
 
-This tutorial replaces the original "ninjas chasing a magical quail" story with
-a physically grounded scenario that uses **the exact same equations**, so the
-code stays a drop-in match for the classic Gordon–Salmond–Smith (1993)
-benchmark, but now every term has a real-world meaning.
+This tutorial describes a physically grounded scenario that uses equations. The
+code uses a drop-in match for the classic Gordon–Salmond–Smith (1993)
+benchmark, with every term having a real-world meaning.
 
 **The scenario:** An autonomous underwater vehicle (AUV) is drifting in a
 tidal current near a research buoy. Its along-track position `x` is affected
@@ -14,8 +13,13 @@ Signal power falls off (and reflects off the seabed) in a way that is
 proportional to the **square** of position rather than position itself — so
 two symmetric positions produce the same reading (the hydrophone cannot tell
 "20 m north" from "20 m south"). This sign ambiguity, plus the nonlinear
-dynamics, is exactly what makes a Kalman filter struggle and a particle
-filter shine.
+dynamics, is exactly what makes a Kalman filter struggle and a particle filter shine.
+
+Particle filters (also called Sequential Monte Carlo (SMC) methods) solve one fundamental problem:
+
+Given a sequence of noisy measurements, estimate the hidden state of a nonlinear, non-Gaussian dynamical system.
+
+Unlike the Kalman Filter, which assumes Gaussian distributions and linear dynamics, the particle filter represents the probability distribution using many random samples (particles).
 
 Files in this tutorial:
 - `particle_filter_auv.py` — runnable, documented Python implementation
