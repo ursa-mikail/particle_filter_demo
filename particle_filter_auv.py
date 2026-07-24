@@ -1,4 +1,14 @@
 """
+%%writefile particle_filter_auv.py
+!python particle_filter_auv.py --show-all
+
+or
+import particle_filter_auv
+particle_filter_auv.main(['--show-all'])
+
+or
+particle_filter_auv.main(['--export-figures', './figures', '--seed', '7'])
+
 Particle Filter Tutorial — Tracking a Drifting AUV with a Noisy Acoustic Sensor
 =================================================================================
 
@@ -23,6 +33,7 @@ can turn them on/off without editing the code.
 
 import argparse
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -395,7 +406,17 @@ def main(argv=None):
     p.add_argument("--export-figures", type=str, default=None,
                     help="headless: save all figures as PNGs into this directory")
 
-    args = p.parse_args()
+    if argv is None:
+        argv = sys.argv[1:]
+        # Jupyter/Colab auto-injects '-f <kernel.json>' when a script is run
+        # as a cell (e.g. via %run or exec) — argparse doesn't know this flag
+        # and errors out. Strip it automatically so the script "just works"
+        # in a notebook without requiring an explicit argv list.
+        if "-f" in argv:
+            idx = argv.index("-f")
+            argv = argv[:idx] + argv[idx + 2:]
+
+    args = p.parse_args(argv)
 
     pf_kwargs = dict(N=args.N, T=args.T, x0=args.x0, x_N=args.xN, x_R=args.xR, V=args.V,
                       resample_method=args.resample, estimate_method=args.estimate,
