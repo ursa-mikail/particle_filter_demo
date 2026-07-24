@@ -1,6 +1,7 @@
 """
 %%writefile particle_filter_auv.py
-!python particle_filter_auv.py --show-all
+!python particle_filter_auv.py --show-all 
+!python particle_filter_auv.py --export-figures <folder_name>
 
 or
 import particle_filter_auv
@@ -454,7 +455,8 @@ def main(argv=None):
 
     if args.animate:
         run_animation(pf_kwargs)
-        return
+        # fall through instead of returning, so --animate can be combined
+        # with --show-* flags (or --export-figures) in the same call
 
     pf = ParticleFilterRun(**pf_kwargs).run()
     fig_summary, rmse = plot_summary(pf)
@@ -465,6 +467,18 @@ def main(argv=None):
     want_stage = args.show_stage_plots or args.show_all
     want_like = args.show_likelihood or args.show_all
     want_neff = args.show_neff or args.show_all
+
+    # If the user didn't ask for any specific plot (and isn't exporting to
+    # PNGs), default to showing EVERYTHING — including the Gaussian
+    # likelihood plot — instead of just the bare summary trajectory. This
+    # means plain `main()` or `main(['--animate'])` always shows the full
+    # picture without needing to remember `--show-likelihood` / `--show-all`.
+    no_specific_flag = not any([
+        args.show_init_dist, args.show_weight_space, args.show_stage_plots,
+        args.show_likelihood, args.show_neff, args.show_all,
+    ])
+    if no_specific_flag and not args.export_figures:
+        want_init = want_weight = want_stage = want_like = want_neff = True
 
     if args.export_figures:
         os.makedirs(args.export_figures, exist_ok=True)
